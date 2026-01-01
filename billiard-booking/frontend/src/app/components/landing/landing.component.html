@@ -1,0 +1,83 @@
+<div class="landing-container">
+  <!-- Hamburger Menu Button -->
+  <button 
+    class="hamburger-menu" 
+    (click)="toggleMenu()"
+    [class.open]="menuOpen()"
+    aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Navigation Overlay -->
+  <nav class="nav-overlay" [class.open]="menuOpen()" (click)="closeMenu()">
+    <div class="nav-content" (click)="$event.stopPropagation()">
+      <ul class="nav-menu">
+        <li><a (click)="navigateToBooking()">Reservierung</a></li>
+        <li><a (click)="navigateToPage('preise')">Preise</a></li>
+        <li><a (click)="navigateToPage('getraenkekarte')">Getränkekarte</a></li>
+        <li><a (click)="navigateToPage('oeffnungszeiten')">Öffnungszeiten</a></li>
+        <li><a (click)="navigateToPage('galerie')">Galerie</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section with Parallax Image -->
+  <section class="hero">
+    <div class="hero-image" [style.opacity]="heroOpacity()">
+      <img src="hero-image.png" alt="Gamehouse">
+    </div>
+    
+    <div class="hero-content">
+      <h1 class="hero-title">Gamehouse</h1>
+      <p class="hero-subtitle">Bad Kreuznach</p>
+    </div>
+  </section>
+
+  <!-- Images Section -->
+  <section class="images-section">
+    <div class="images-container">
+      <div class="image-wrapper">
+        <img src="CollageBild7.jpeg" alt="Gamehouse" class="feature-image">
+      </div>
+      <div class="image-wrapper">
+        <img src="CollageBild9.jpeg" alt="Gamehouse" class="feature-image">
+      </div>
+    </div>
+    <h2 class="images-title">Leckere Cocktails, spielerische Abende und richtig gute Vibes</h2>
+  </section>
+
+  <!-- Öffnungszeiten Section -->
+  <section class="opening-hours-section">
+    <div class="neon-container">
+      <h2 class="neon-title">Öffnungszeiten</h2>
+      <div class="hours-list">
+        <div class="neon-hours-item">
+          <span class="neon-day">Montag bis Freitag</span>
+          <span class="neon-time">16:00 - 00:00</span>
+        </div>
+        <div class="neon-hours-item">
+          <span class="neon-day">Samstag & Sonntag</span>
+          <span class="neon-time">14:00 - 02:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="footer-section">
+    <div class="footer-links">
+      <a (click)="navigateToPage('impressum')" class="footer-link">Impressum</a>
+      <span class="footer-separator">|</span>
+      <a (click)="navigateToPage('datenschutz')" class="footer-link">Datenschutz</a>
+      <span class="footer-separator">|</span>
+      <a (click)="navigateToPage('agb')" class="footer-link">AGB</a>
+      <span class="footer-separator">|</span>
+      <a (click)="navigateToPage('kontakt')" class="footer-link">Kontakt</a>
+      <span class="footer-separator">|</span>
+      <a (click)="navigateToPage('jobs')" class="footer-link">Jobs</a>
+    </div>
+    <p class="footer-copyright">&copy; 2026 Gamehouse Bad Kreuznach. Alle Rechte vorbehalten.</p>
+  </footer>
+</div>

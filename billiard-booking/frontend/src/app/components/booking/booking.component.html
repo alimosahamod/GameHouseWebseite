@@ -1,0 +1,279 @@
+<div class="booking-container">
+  <!-- Hamburger Menu Button -->
+  <button
+    class="hamburger-menu"
+    (click)="toggleMenu()"
+    [class.open]="menuOpen()"
+    aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Navigation Overlay -->
+  <nav class="nav-overlay" [class.open]="menuOpen()" (click)="closeMenu()">
+    <div class="nav-content" (click)="$event.stopPropagation()">
+      <ul class="nav-menu">
+        <li><a (click)="navigateToHome()">Home</a></li>
+        <li><a (click)="navigateToPage('preise')">Preise</a></li>
+        <li><a (click)="navigateToPage('getraenkekarte')">Getränkekarte</a></li>
+        <li><a (click)="navigateToPage('oeffnungszeiten')">Öffnungszeiten</a></li>
+        <li><a (click)="navigateToPage('galerie')">Galerie</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <h1>Billardtisch Reservierung</h1>
+
+  <!-- Billiard Image with Gradient Overlay -->
+  <div class="hero-image-container">
+    <div class="hero-image-gradient"></div>
+    <img src="BilliardImage.png" alt="Billard" class="hero-image">
+  </div>
+
+  <!-- Error Message -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+
+  <!-- Info Buttons -->
+  <div class="info-buttons">
+    <button class="info-btn" (click)="showSchedule()">
+      <img src="ZeitplanIconV2.png" alt="Zeitplan" class="info-icon">
+      <span class="info-text">Zeitplan</span>
+    </button>
+    <button class="info-btn" (click)="showFloorPlan()">
+      <img src="LageplanIcon.png" alt="Lageplan" class="info-icon">
+      <span class="info-text">Lageplan</span>
+    </button>
+  </div>
+
+  <!-- Success Message View -->
+  @if (reservationSuccess()) {
+    <div class="success-container">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title">Reservierung erfolgreich!</h2>
+      <p class="success-message">Ihre Reservierung wurde erfolgreich übermittelt.</p>
+      <div class="success-details">
+        <p><strong>Tisch:</strong> {{ reservationData().tableName }}</p>
+        <p><strong>Datum:</strong> {{ formatDate(reservationData().date) }}</p>
+        <p><strong>Zeit:</strong> {{ reservationData().startTime }}</p>
+        <p><strong>Dauer:</strong> {{ formatDuration(reservationData().duration) }}</p>
+      </div>
+      <button class="btn-new-reservation" (click)="resetBooking()">Neue Reservierung</button>
+    </div>
+  }
+
+  <!-- Wochenkalender -->
+  @if (!reservationSuccess()) {
+  <div class="week-calendar">
+    <div class="week-navigation">
+      <button class="btn-week-nav" (click)="previousWeek()" [disabled]="!canGoToPreviousWeek()">
+        ← Vorherige Woche
+      </button>
+      <button class="btn-week-nav" (click)="nextWeek()">
+        Nächste Woche →
+      </button>
+    </div>
+
+    <div class="week-days">
+      @for (day of weekDays(); track day.dateString) {
+        <div
+          class="day-card"
+          [class.today]="day.isToday"
+          [class.selected]="day.isSelected"
+          [class.past]="day.isPast"
+          (click)="!day.isPast && selectDate(day.dateString)">
+          <div class="day-name">{{ day.dayName }}</div>
+          <div class="day-number">{{ day.dayNumber }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Buchungsoptionen oder "Alles ausgebucht" -->
+  @if (availability() && !loading()) {
+    @if (getAvailableDurations().length > 0) {
+      <!-- Dauer-Auswahl -->
+      <div class="duration-selection">
+        <h2>Dauer wählen</h2>
+        <select
+          class="duration-select"
+          [value]="selectedDuration()"
+          (change)="selectDuration(+$any($event.target).value)">
+          <option value="0">Bitte wählen...</option>
+          @for (duration of durationOptions; track duration) {
+            @if (getAvailableDurations().includes(duration)) {
+              <option [value]="duration">{{ formatDuration(duration) }}</option>
+            } @else {
+              <option [value]="duration" disabled>{{ formatDuration(duration) }} (nicht verfügbar)</option>
+            }
+          }
+        </select>
+      </div>
+
+      <!-- Startzeit-Auswahl -->
+      <div class="time-selection">
+        <h2>Startzeit wählen</h2>
+        <select
+          class="time-select"
+          [value]="selectedStartTime()"
+          [disabled]="selectedDuration() === 0"
+          (change)="selectStartTime($any($event.target).value)">
+          <option value="">Bitte wählen...</option>
+          @if (selectedDuration() > 0) {
+            @for (time of getAllPossibleStartTimes(); track time) {
+              @if (getAvailableStartTimes().includes(time)) {
+                <option [value]="time">{{ time }}</option>
+              } @else {
+                <option [value]="time" disabled>{{ time }} (nicht verfügbar)</option>
+              }
+            }
+          }
+        </select>
+        @if (selectedDuration() > 0 && getAvailableStartTimes().length === 0) {
+          <div class="no-slots">
+            Keine verfügbaren Zeiten für die gewählte Dauer.
+          </div>
+        }
+      </div>
+
+      <!-- Tisch-Auswahl -->
+      <div class="table-selection">
+        <h2>Tisch wählen</h2>
+        <select
+          class="table-select"
+          [value]="selectedTimeSlot()?.tableId || ''"
+          [disabled]="!selectedStartTime()"
+          (change)="selectTable(+$any($event.target).value)">
+          <option value="">Bitte wählen...</option>
+          @if (selectedStartTime()) {
+            @for (table of tables(); track table.id) {
+              @if (isTableAvailable(table.id)) {
+                <option [value]="table.id">{{ table.name }}</option>
+              } @else {
+                <option [value]="table.id" disabled>{{ table.name }} (nicht verfügbar)</option>
+              }
+            }
+          }
+        </select>
+        @if (selectedStartTime() && getAvailableTablesForTime().length === 0) {
+          <div class="no-slots">
+            Keine verfügbaren Tische für diese Zeit.
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Alles ausgebucht -->
+      <div class="no-slots">
+        Keine verfügbaren Tische für diesen Tag.
+      </div>
+    }
+  }
+
+  <!-- Reservierungsformular -->
+  @if (!reservationSuccess() && getAvailableDurations().length > 0) {
+  <div class="reservation-form">
+    <h2>Ihre Daten</h2>
+
+    <div class="form-group">
+      <label for="customer-name">Name *</label>
+      <input
+        type="text"
+        id="customer-name"
+        [(ngModel)]="customerName"
+        class="form-control"
+        placeholder="Ihr Name"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="customer-email">E-Mail</label>
+      <input
+        type="email"
+        id="customer-email"
+        [(ngModel)]="customerEmail"
+        class="form-control"
+        placeholder="ihre.email@beispiel.de">
+    </div>
+
+    <div class="form-group">
+      <label for="customer-phone">Telefon</label>
+      <input
+        type="tel"
+        id="customer-phone"
+        [(ngModel)]="customerPhone"
+        class="form-control"
+        placeholder="+49 123 456789">
+    </div>
+
+    @if (selectedTimeSlot()) {
+      <div class="reservation-summary">
+        <h3>Zusammenfassung</h3>
+        <p><strong>Tisch:</strong> {{ selectedTimeSlot()!.tableName }}</p>
+        <p><strong>Datum:</strong> {{ formatDate(selectedDate()) }}</p>
+        <p><strong>Von:</strong> {{ selectedTimeSlot()!.startTime }}</p>
+        <p><strong>Bis:</strong> {{ addMinutesToTime(selectedTimeSlot()!.startTime, selectedDuration()) }}</p>
+        <p><strong>Dauer:</strong> {{ formatDuration(selectedDuration()) }}</p>
+      </div>
+    }
+
+    <button
+      class="btn-reserve"
+      [disabled]="!canMakeReservation() || loading()"
+      (click)="makeReservation()">
+      {{ loading() ? 'Wird reserviert...' : 'Jetzt reservieren' }}
+    </button>
+  </div>
+  }
+  }
+
+  <!-- Schedule Modal -->
+  @if (showScheduleModal()) {
+    <div class="modal-overlay" (click)="closeSchedule()">
+      <div class="schedule-modal" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeSchedule()">×</button>
+
+        <div class="schedule-header">
+          <button class="schedule-nav-btn" (click)="changeScheduleDate(-1)">← Vorheriger Tag</button>
+          <h2 class="schedule-title">Zeitplan - {{ formatDate(scheduleDate()) }}</h2>
+          <button class="schedule-nav-btn" (click)="changeScheduleDate(1)">Nächster Tag →</button>
+        </div>
+
+        <div class="schedule-grid-container">
+          <!-- Schedule grid -->
+          <div class="schedule-grid">
+            <!-- Table headers (X-axis) -->
+            <div class="tables-axis-title">Tisch</div>
+            <div class="table-headers">
+              @for (table of tables(); track table.id) {
+                <div class="table-header">{{ getTableNumber(table.name) }}</div>
+              }
+            </div>
+
+            <!-- Time lines and reservation area -->
+            <div class="schedule-area">
+              <!-- Horizontal time lines -->
+              @for (hour of [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2]; track hour; let index = $index) {
+                <div class="time-line">
+                  <span class="time-label">{{ hour.toString().padStart(2, '0') }}:00</span>
+                </div>
+              }
+
+              <!-- Reservation blocks -->
+              @for (block of getReservationBlocks(); track $index) {
+                <div class="reservation-block"
+                     [style.left.px]="block.left"
+                     [style.top.px]="block.top"
+                     [style.width.px]="block.width"
+                     [style.height.px]="block.height">
+                  {{ block.customerName }}
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

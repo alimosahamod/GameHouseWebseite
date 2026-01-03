@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # --- Datenbank ---
   mysql:
     image: mysql:8.0
     container_name: billiard-mysql
@@ -18,6 +19,28 @@ services:
     networks:
       - billiard-network
 
+  # --- Backend (NEU) ---
+  backend:
+    build:
+      context: ../backend      # Geht aus dem 'docker' Ordner eins hoch in 'backend'
+      dockerfile: Dockerfile
+    container_name: billiard-backend
+    restart: always
+    ports:
+      - "3000:3000"            # Erreichbar unter Port 3000
+    environment:
+      # WICHTIG: Hier verbinden wir uns zum Service 'mysql', nicht zu 'localhost'
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: billiard_user
+      DB_PASSWORD: billiard_pass
+      DB_DATABASE: billiard_booking
+    depends_on:
+      - mysql                  # Wartet auf die Datenbank
+    networks:
+      - billiard-network
+
+  # --- Adminer ---
   adminer:
     image: adminer:latest
     container_name: billiard-adminer

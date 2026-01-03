@@ -24,7 +24,11 @@ import { Admin } from './entities/admin.entity';
       password: process.env.DB_PASSWORD || 'billiard_pass',
       database: process.env.DB_DATABASE || 'billiard_booking',
       entities: [Table, Reservation, OpeningHours, Blackout, Admin],
-      synchronize: false, // In production auf false setzen!
+
+      // WICHTIG: Auf 'true' setzen, damit TypeORM die Tabellen auf dem Server erstellt!
+      // Später in Produktion (wenn Daten wichtig sind) auf 'false' ändern und Migrationen nutzen.
+      synchronize: true,
+
       logging: true,
     }),
     TablesModule,

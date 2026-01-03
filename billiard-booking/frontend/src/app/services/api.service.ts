@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Table {
   id: number;
@@ -53,7 +54,9 @@ export interface AvailabilityResponse {
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000';
+
+  // Die URL kommt jetzt dynamisch aus der environment-Datei (localhost oder AWS IP)
+  private apiUrl = environment.apiUrl;
 
   getTables(): Observable<Table[]> {
     return this.http.get<Table[]>(`${this.apiUrl}/tables`);

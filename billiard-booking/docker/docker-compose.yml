@@ -15,7 +15,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - billiard-network
 
@@ -39,6 +39,19 @@ services:
       - mysql                  # Wartet auf die Datenbank
     networks:
       - billiard-network
+  # --- Frontend (NEU) ---
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: billiard-frontend
+    restart: always
+    ports:
+      - "80:80"                # Webseite ist dann direkt über die IP erreichbar (ohne Port)
+    networks:
+      - billiard-network
+    depends_on:
+      - backend
 
   # --- Adminer ---
   adminer:

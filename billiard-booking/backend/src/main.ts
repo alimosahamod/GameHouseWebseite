@@ -4,10 +4,12 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
-  // CORS aktivieren für Frontend
+
+  // CORS Konfiguration
   app.enableCors({
-    origin: 'http://localhost:4200', // Angular Dev Server
+    // 'true' erlaubt dynamisch jede anfragende Quelle (S3, Handy, Localhost)
+    // Das ist unsicher für echte Bank-Anwendungen, aber perfekt für Ihren Test.
+    origin: true,
     credentials: true,
   });
 
@@ -17,8 +19,8 @@ async function bootstrap() {
     transform: true,
   }));
 
-    const port = process.env.PORT || 3000;
-    await app.listen(port);
-    console.log(`Backend läuft auf http://localhost:${port}`);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  console.log(`Backend läuft auf http://localhost:${port}`);
 }
 bootstrap();

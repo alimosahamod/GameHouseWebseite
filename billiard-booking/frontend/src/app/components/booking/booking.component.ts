@@ -26,6 +26,15 @@ export class BookingComponent implements OnInit {
   selectedStartTime = signal<string>('');
   selectedTimeSlot = signal<{ tableId: number; tableName: string; startTime: string } | null>(null);
 
+  // Layout-Konstanten für den Zeitplan
+  readonly timeColumnWidth = 70;
+  readonly tableColumnWidth = 100;
+
+  // Berechnete Gesamtbreite des Zeitplans basierend auf der Anzahl der Tische
+  scheduleWidth = computed(() => {
+    return this.timeColumnWidth + (this.tables().length * this.tableColumnWidth);
+  });
+
   weekDays = computed(() => {
     const start = this.currentWeekStart();
     const today = new Date();
@@ -114,7 +123,7 @@ export class BookingComponent implements OnInit {
   }
 
   showSchedule() {
-    this.scheduleDate.set(this.selectedDate());
+    this.scheduleDate.set(this.getTodayDate());
     this.showScheduleModal.set(true);
     this.loadScheduleAvailability();
   }
@@ -126,11 +135,30 @@ export class BookingComponent implements OnInit {
   changeScheduleDate(direction: number) {
     const currentDate = new Date(this.scheduleDate());
     currentDate.setDate(currentDate.getDate() + direction);
+
+    // Verhindere Navigation in die Vergangenheit
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const targetDate = new Date(currentDate);
+    targetDate.setHours(0, 0, 0, 0);
+
+    if (targetDate < today) {
+      return;
+    }
+
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const date = String(currentDate.getDate()).padStart(2, '0');
     this.scheduleDate.set(`${year}-${month}-${date}`);
     this.loadScheduleAvailability();
+  }
+
+  canGoToPreviousScheduleDay(): boolean {
+    const current = new Date(this.scheduleDate());
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    current.setHours(0, 0, 0, 0);
+    return current > today;
   }
 
   loadScheduleAvailability() {
@@ -160,17 +188,19 @@ export class BookingComponent implements OnInit {
     if (!availability || allTables.length === 0) return [];
 
     const blocks: Array<{left: number; top: number; width: number; height: number; customerName: string}> = [];
-    const tableWidth = 100; // pixels per table column
+
+    // Verwende die Klassen-Konstante
+    const tableWidth = this.tableColumnWidth;
 
     // Process each table's slots
     availability.tables.forEach((table) => {
       // FIX: Bestimme die Position basierend auf der ID in der Haupt-Tischliste (Spalten)
-      // anstatt einfach den Index der Verfügbarkeits-Liste zu nehmen.
       const columnIndex = allTables.findIndex(t => t.id === table.tableId);
 
       if (columnIndex === -1) return; // Tisch nicht in den Spalten gefunden
 
-      const tableLeft = 70 + (columnIndex * tableWidth); // 70px for time labels
+      // Verwende die Klassen-Konstanten für die Berechnung
+      const tableLeft = this.timeColumnWidth + (columnIndex * tableWidth);
 
       table.slots.forEach((slot) => {
         if (!slot.available) {
@@ -200,7 +230,7 @@ export class BookingComponent implements OnInit {
             top: top,
             width: tableWidth - 10, // Some padding
             height: height,
-            customerName: slot.reservation?.customerName || 'Belegt'
+            customerName: ""
           });
         }
       });
@@ -228,8 +258,8 @@ export class BookingComponent implements OnInit {
 
   isSameDay(date1: Date, date2: Date): boolean {
     return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate();
   }
 
   nextWeek() {

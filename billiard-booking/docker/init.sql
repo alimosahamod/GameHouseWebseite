@@ -47,13 +47,13 @@ CREATE TABLE IF NOT EXISTS reservations (
 
 -- Standard-Öffnungszeiten einfügen (Mo-So: 16:00-22:00)
 INSERT INTO opening_hours (day_of_week, open_time, close_time) VALUES
-(0, '16:00:00', '22:00:00'), -- Sonntag
-(1, '16:00:00', '22:00:00'), -- Montag
-(2, '16:00:00', '22:00:00'), -- Dienstag
-(3, '16:00:00', '22:00:00'), -- Mittwoch
-(4, '16:00:00', '22:00:00'), -- Donnerstag
-(5, '16:00:00', '22:00:00'), -- Freitag
-(6, '16:00:00', '22:00:00'); -- Samstag
+(0, '14:00:00', '02:00:00'), -- Sonntag
+(1, '16:00:00', '00:00:00'), -- Montag
+(2, '16:00:00', '00:00:00'), -- Dienstag
+(3, '16:00:00', '00:00:00'), -- Mittwoch
+(4, '16:00:00', '00:00:00'), -- Donnerstag
+(5, '16:00:00', '00:00:00'), -- Freitag
+(6, '14:00:00', '02:00:00'); -- Samstag
 
 -- Beispiel-Billardtische
 INSERT INTO tables (name, description) VALUES

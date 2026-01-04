@@ -8,6 +8,7 @@
     "start": "node dist/main",
     "start:dev": "ts-node src/main.ts",
     "start:watch": "nodemon --watch src --exec ts-node src/main.ts",
+    "start:prod": "node dist/main",
     "create-admin": "ts-node src/scripts/create-admin.ts"
   },
   "keywords": [],

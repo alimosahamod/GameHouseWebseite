@@ -12,15 +12,20 @@ export class LandingComponent {
   menuOpen = signal<boolean>(false);
   heroOpacity = signal<number>(1);
 
+  // NEU: Signale für die Parallax-Verschiebung der 3 Spalten
+  col1Transform = signal<string>('translateY(0px)');
+  col2Transform = signal<string>('translateY(0px)');
+  col3Transform = signal<string>('translateY(0px)');
+
   constructor(private router: Router) {}
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
     const scrollPosition = window.scrollY;
-    
-    // Hero Image: Fade out von 0 bis 600px
+
+    // --- Bestehende Hero Logic (unverändert) ---
     const heroFadeStart = 0;
-    const heroFadeEnd = 600;
+    const heroFadeEnd = 400;
     let heroOpacity = 1;
     if (scrollPosition > heroFadeStart) {
       heroOpacity = 1 - (scrollPosition - heroFadeStart) / (heroFadeEnd - heroFadeStart);
@@ -28,20 +33,15 @@ export class LandingComponent {
     }
     this.heroOpacity.set(heroOpacity);
 
-    // Fade-in effect for images
-    this.checkImageVisibility();
-  }
+    // --- NEU: Collage Parallax Logic ---
+    // Spalte 1: Bewegt sich nach oben
+    this.col1Transform.set(`translateY(-${scrollPosition * 0.1}px)`);
 
-  private checkImageVisibility() {
-    const imageWrappers = document.querySelectorAll('.image-wrapper');
-    const windowHeight = window.innerHeight;
-    
-    imageWrappers.forEach((wrapper) => {
-      const rect = wrapper.getBoundingClientRect();
-      if (rect.top < windowHeight * 0.8) {
-        wrapper.classList.add('fade-in');
-      }
-    });
+    // Spalte 2: Bewegt sich nach unten (Gegenbewegung)
+    this.col2Transform.set(`translateY(${scrollPosition * 0.1}px)`);
+
+    // Spalte 3: Bewegt sich schneller nach oben
+    this.col3Transform.set(`translateY(-${scrollPosition * 0.15}px)`);
   }
 
   toggleMenu() {

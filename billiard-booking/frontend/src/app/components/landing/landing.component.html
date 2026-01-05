@@ -1,7 +1,7 @@
 <div class="landing-container">
   <!-- Hamburger Menu Button -->
-  <button 
-    class="hamburger-menu" 
+  <button
+    class="hamburger-menu"
     (click)="toggleMenu()"
     [class.open]="menuOpen()"
     aria-label="Menu">
@@ -28,25 +28,56 @@
     <div class="hero-image" [style.opacity]="heroOpacity()">
       <img src="hero-image.png" alt="Gamehouse">
     </div>
-    
+
     <div class="hero-content">
       <h1 class="hero-title">Gamehouse</h1>
       <p class="hero-subtitle">Bad Kreuznach</p>
     </div>
   </section>
 
-  <!-- Images Section -->
-  <section class="images-section">
-    <div class="images-container">
-      <div class="image-wrapper">
-        <img src="CollageBild7.jpeg" alt="Gamehouse" class="feature-image">
-      </div>
-      <div class="image-wrapper">
-        <img src="CollageBild9.jpeg" alt="Gamehouse" class="feature-image">
-      </div>
-    </div>
-    <h2 class="images-title">Leckere Cocktails, spielerische Abende und richtig gute Vibes</h2>
-  </section>
+ <!-- NEUE Collage Section -->
+   <section class="collage-section">
+
+     <!-- Overlay Text (Außerhalb des Wrappers, damit er gerade bleibt) -->
+     <div class="collage-overlay">
+       <h2 class="collage-title">Richtig gute Vibes</h2>
+     </div>
+
+     <!-- Der Wrapper mit den Bildern (wird gedreht) -->
+     <div class="collage-wrapper">
+
+       <!-- Spalte 1 -->
+       <div class="collage-column" [style.transform]="col1Transform()">
+         <img src="CollageBild1.jpeg" class="collage-img" alt="Atmosphere">
+         <img src="CollageBild2.jpeg" class="collage-img" alt="Drinks">
+         <img src="CollageBild3.jpeg" class="collage-img" alt="Billiard">
+         <img src="CollageBild1.jpeg" class="collage-img" alt="Billiard">
+         <img src="CollageBild6.jpeg" class="collage-img" alt="Vibes">
+         <img src="CollageBild6.jpeg" class="collage-img" alt="Vibes">
+       </div>
+
+       <!-- Spalte 2 (versetzt) -->
+       <div class="collage-column column-offset" [style.transform]="col2Transform()">
+         <img src="CollageBild9.jpeg" class="collage-img" alt="Fun">
+         <img src="CollageBild7.jpeg" class="collage-img" alt="Friends">
+         <img src="CollageBild5.jpeg" class="collage-img" alt="Party">
+         <img src="CollageBild6.jpeg" class="collage-img" alt="Vibes">
+         <img src="CollageBild6.jpeg" class="collage-img" alt="Vibes">
+         <img src="CollageBild6.jpeg" class="collage-img" alt="Vibes">
+       </div>
+
+       <!-- Spalte 3 -->
+       <div class="collage-column" [style.transform]="col3Transform()">
+         <img src="CollageBild7.jpeg" class="collage-img" alt="Game">
+         <img src="CollageBild8.jpeg" class="collage-img" alt="Night">
+         <img src="CollageBild7.jpeg" class="collage-img" alt="Relax">
+         <img src="CollageBild3.jpeg" class="collage-img" alt="Billiard">
+         <img src="CollageBild6.jpeg" class="collage-img" alt="Vibes">
+         <img src="CollageBild6.jpeg" class="collage-img" alt="Vibes">
+       </div>
+
+     </div>
+   </section>
 
   <!-- Öffnungszeiten Section -->
   <section class="opening-hours-section">

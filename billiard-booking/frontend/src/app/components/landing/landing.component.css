@@ -398,90 +398,105 @@
 }
 
 @keyframes neon-white-pulse {
-  0%, 100% { 
+  0%, 100% {
     text-shadow: 0 0 20px #ffffff, 0 0 40px #ffffff, 0 0 60px #ffffff;
   }
-  50% { 
+  50% {
     text-shadow: 0 0 30px #ffffff, 0 0 60px #ffffff, 0 0 90px #ffffff;
   }
 }
 
-/* Images Section */
-.images-section {
-  min-height: 100vh;
+/* --- NEUE COLLAGE SECTION --- */
+.collage-section {
+  position: relative;
+  height: 100vh;
   background: #0a0a0a;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+/* Overlay für den Text */
+.collage-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Zentriert, KEINE Rotation */
+  z-index: 20;
+  pointer-events: none; /* Klicks gehen durch */
+  width: 100%;
+  text-align: center;
+}
+
+.collage-title {
+  font-size: 3.5rem; /* Kleiner als vorher (war 5rem) */
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #ffffff;
+  /* Weißer Neon-Glow passend zur Öffnungszeiten-Section */
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+.collage-wrapper {
+  display: flex;
+  gap: 2rem;
+  transform: rotate(15deg) scale(1.2); /* Nur die Bilder werden gedreht */
+  width: 120%;
+  justify-content: center;
+  will-change: transform;
+}
+
+.collage-column {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  position: relative;
-  gap: 3rem;
+  gap: 2rem;
+  width: 25vw;
+  will-change: transform;
 }
 
-.images-container {
-  display: flex;
-  gap: 4rem;
-  max-width: 1400px;
+.column-offset {
+  margin-top: -200px;
+}
+
+.collage-img {
   width: 100%;
-  justify-content: center;
-  align-items: center;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  /* Standard: Schwarz-Weiß und etwas dunkler */
+  filter: grayscale(100%) brightness(0.7);
+  transition: filter 0.4s ease;
 }
 
-.image-wrapper {
-  position: relative;
-  flex: 1;
-  max-width: 500px;
-  opacity: 0;
-  transform: translateY(50px);
-  transition: opacity 1s ease-out, transform 1s ease-out;
-}
-
-.image-wrapper.fade-in {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.image-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 20px;
-  background: radial-gradient(ellipse at center, transparent 40%, #0a0a0a 100%);
-  pointer-events: none;
+.collage-img:hover {
+  /* Hover: Bunt und volle Helligkeit */
+  filter: grayscale(0%) brightness(1);
+  /* KEIN Transform/Scale mehr */
   z-index: 2;
 }
 
-.feature-image {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  border-radius: 20px;
-  filter: grayscale(100%);
-  transition: filter 0.5s ease;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+/* Responsive Anpassung */
+@media (max-width: 768px) {
+  .collage-wrapper {
+    width: 150%;
+    gap: 1rem;
+  }
+  .collage-column {
+    width: 40vw;
+  }
+  .collage-img {
+    height: 200px;
+  }
+  .collage-title {
+    font-size: 2.5rem;
+  }
 }
-
-.feature-image:hover {
-  filter: grayscale(0%);
-}
-
-.images-title {
-  font-size: 1.8rem;
-  font-weight: 300;
-  letter-spacing: 2px;
-  text-align: center;
-  color: #ffffff;
-  text-shadow: 0 0 15px #ffffff, 0 0 30px #ffffff, 0 0 45px #ffffff;
-  margin-top: 2rem;
-  animation: neon-white-pulse 2s ease-in-out infinite alternate;
-  max-width: 1000px;
-}
-
 /* Öffnungszeiten Section */
 .opening-hours-section {
   min-height: 70vh;

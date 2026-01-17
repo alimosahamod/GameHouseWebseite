@@ -52,11 +52,6 @@ export class LandingComponent {
     this.menuOpen.set(false);
   }
 
-  navigateToBooking() {
-    this.closeMenu();
-    this.router.navigate(['/booking']);
-  }
-
   navigateToPage(page: string) {
     this.closeMenu();
     this.router.navigate([`/${page}`]);

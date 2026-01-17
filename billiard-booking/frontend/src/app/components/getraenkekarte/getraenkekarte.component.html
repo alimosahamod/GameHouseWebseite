@@ -1,5 +1,29 @@
 <div class="page-container">
-  <button class="back-button" (click)="navigateHome()">← Zurück</button>
+  <!-- Hamburger Menu Button -->
+  <button
+    class="hamburger-menu"
+    (click)="toggleMenu()"
+    [class.open]="menuOpen()"
+    aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Navigation Overlay -->
+  <nav class="nav-overlay" [class.open]="menuOpen()" (click)="closeMenu()">
+    <div class="nav-content" (click)="$event.stopPropagation()">
+      <ul class="nav-menu">
+        <li><a (click)="navigateHome()">Home</a></li>
+        <li><a (click)="navigateToPage('events')">Events</a></li>
+        <li><a (click)="navigateToPage('preise')">Preise</a></li>
+        <li><a (click)="navigateToPage('getraenkekarte')">Getränkekarte</a></li>
+        <li><a (click)="navigateToPage('oeffnungszeiten')">Öffnungszeiten</a></li>
+        <li><a (click)="navigateToPage('galerie')">Galerie</a></li>
+      </ul>
+    </div>
+  </nav>
+
   <div class="content">
     <h1>Getränkekarte</h1>
     <p class="placeholder-text">Diese Seite wird in Kürze verfügbar sein.</p>
